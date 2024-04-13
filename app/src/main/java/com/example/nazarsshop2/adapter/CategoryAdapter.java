@@ -4,11 +4,14 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.nazarsshop2.R;
 import com.example.nazarsshop2.objects.Category;
 
@@ -38,6 +41,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         holder.id.setText(String.valueOf(categories.get(position).getId()));
         holder.name.setText(categories.get(position).getName());
         holder.description.setText(categories.get(position).getDescription());
+        String url = "https://spu111.itstep.click/images/"+categories.get(position).getImage();
+        Glide.with(context).load(url).apply(new RequestOptions().override(500)).into(holder.image);
     }
 
     @Override
@@ -48,12 +53,14 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     public static class CategoryViewHolder extends RecyclerView.ViewHolder{
 
         TextView id,name,description;
+        ImageView image;
 
         public CategoryViewHolder(@NonNull View itemView) {
             super(itemView);
             id = itemView.findViewById(R.id.idView);
             name = itemView.findViewById(R.id.nameView);
             description = itemView.findViewById(R.id.descriptionView);
+            image = itemView.findViewById(R.id.imageView);
         }
     }
 }

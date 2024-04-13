@@ -1,8 +1,12 @@
 package com.example.nazarsshop2;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -33,7 +37,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         RecyclerView recyclerView = findViewById(R.id.categoryView);
-
+        Button buttonLogin = findViewById(R.id.buttonGoToLogin);
+        buttonLogin.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
+                        startActivity(intent);
+                    }
+                }
+        );
         NetworkService
                 .GetNetworkService()
                 .getApi()
@@ -42,7 +55,10 @@ public class MainActivity extends AppCompatActivity {
                         new Callback<List<Category>>() {
                             @Override
                             public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
+
                                 if(response.body()!=null){
+                                    int count = response.body().size();
+                                    Log.d("Count --->",String.valueOf(count));
                                     List<Category> categories = response.body();
                                     CategoryAdapter adapter = new CategoryAdapter(getBaseContext(),categories);
 
@@ -53,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
 
                             @Override
                             public void onFailure(Call<List<Category>> call, Throwable t) {
-
+                                Log.e("Error REST","Something went wrong");
                             }
                         }
                 );
