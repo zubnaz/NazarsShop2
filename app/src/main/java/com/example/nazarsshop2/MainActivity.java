@@ -28,7 +28,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,16 +37,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         RecyclerView recyclerView = findViewById(R.id.categoryView);
-        Button buttonLogin = findViewById(R.id.buttonGoToLogin);
-        buttonLogin.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
-                        startActivity(intent);
-                    }
-                }
-        );
         NetworkService
                 .GetNetworkService()
                 .getApi()
@@ -60,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
                                     int count = response.body().size();
                                     Log.d("Count --->",String.valueOf(count));
                                     List<Category> categories = response.body();
-                                    CategoryAdapter adapter = new CategoryAdapter(getBaseContext(),categories);
+                                    CategoryAdapter adapter = new CategoryAdapter(getBaseContext(),categories,MainActivity.this);
 
                                     recyclerView.setAdapter(adapter);
                                     recyclerView.setLayoutManager(new LinearLayoutManager(getBaseContext()));

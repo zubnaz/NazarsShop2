@@ -10,7 +10,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class NetworkService {
 
     private static NetworkService networkService;
-    private String URL = "https://spu111.itstep.click";
+    private String URL = "https://spu111.itstep.click/";
     private Retrofit retrofit;
 
     public NetworkService(){
