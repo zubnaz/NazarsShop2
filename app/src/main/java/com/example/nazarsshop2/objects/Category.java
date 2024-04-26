@@ -16,6 +16,18 @@ public class Category {
     @Expose
     private String description;
 
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
+    @SerializedName("user")
+    @Expose
+    private String user;
+
 
 
     @SerializedName("image")

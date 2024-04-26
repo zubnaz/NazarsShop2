@@ -27,6 +27,11 @@ public class BaseActivity extends AppCompatActivity {
             startActivity(intent);
             return true;
         }
+        else if(select== id.m_register){
+            Intent intent = new Intent(BaseActivity.this, Register.class);
+            startActivity(intent);
+            return true;
+        }
         else if(select== id.m_login){
             Intent intent = new Intent(BaseActivity.this, LoginActivity.class);
             startActivity(intent);

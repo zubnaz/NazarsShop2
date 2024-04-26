@@ -2,6 +2,9 @@ package com.example.nazarsshop2;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -26,6 +29,11 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.nazarsshop2.objects.CategoryEditDto;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.io.File;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -33,7 +41,11 @@ import retrofit2.Response;
 public class CategoryEditActivity extends BaseActivity {
     TextInputLayout tlName;
     TextInputLayout tlDescription;
+    ActivityResultLauncher<Intent> activityResultLauncher;
     Button btnCategoryEdit;
+    Button btnGetPhoto;
+    ImageView image;
+    Uri uri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +59,23 @@ public class CategoryEditActivity extends BaseActivity {
         tlName.getEditText().setText(name);
         String description = intent.getStringExtra("Description");
         tlDescription.getEditText().setText(description);
+        btnGetPhoto = findViewById(R.id.buttonGetPhotoEdit);
+        btnGetPhoto.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(MediaStore.ACTION_PICK_IMAGES);
+                        activityResultLauncher.launch(intent);
+                    }
+                }
+        );
+        image = findViewById(R.id.imageViewEdit);
+        Glide.with(getApplicationContext())
+                .load(intent.getStringExtra("Image"))
+                .apply(new RequestOptions().override(400))
+                .into(image);
 
+        RegisterResult();
         btnCategoryEdit = findViewById(R.id.btnCategoryEdit);
         btnCategoryEdit.setOnClickListener(
                 new View.OnClickListener() {
@@ -59,14 +87,26 @@ public class CategoryEditActivity extends BaseActivity {
                         }
                         else
                         {
-                            CategoryEditDto model = new CategoryEditDto();
+                            int id = intent.getIntExtra("Id",-1);
+                            RequestBody idPart = RequestBody.create(MediaType.parse("text/plain"),String.valueOf(id));
+                            RequestBody namePart = RequestBody.create(MediaType.parse("text/plain"), tlName.getEditText().getText().toString());
+                            RequestBody descriptionPart = RequestBody.create(MediaType.parse("text/plain"), tlDescription.getEditText().getText().toString());
+                            Drawable drawable = image.getDrawable();
+                            Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+                            String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Image Description", null);
+                            Uri imageUri = Uri.parse(path);
+                            File imageFile = new File(getRealPathFromURI(imageUri));
+
+                            RequestBody requestFile = RequestBody.create(MediaType.parse("image/*"), imageFile);
+                            MultipartBody.Part imagePart = MultipartBody.Part.createFormData("image", imageFile.getName(), requestFile);
+                            /*CategoryEditDto model = new CategoryEditDto();
                             model.setId(intent.getIntExtra("Id",-1));
                             model.setName(tlName.getEditText().getText().toString());
-                            model.setDescription(tlDescription.getEditText().getText().toString());
+                            model.setDescription(tlDescription.getEditText().getText().toString());*/
                             NetworkService
                                     .GetNetworkService()
                                     .getApi()
-                                    .Edit(model)
+                                    .Edit(idPart,namePart,descriptionPart,imagePart)
                                     .enqueue(
                                             new Callback<Void>() {
                                                 @Override
@@ -88,6 +128,35 @@ public class CategoryEditActivity extends BaseActivity {
                     }
                 }
         );
+    }
+    private void RegisterResult(){
+        activityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult o) {
+                        try {
+                            uri = o.getData().getData();
+                            //image.setImageURI(uri);
+                            Glide.with(getApplicationContext())
+                                    .load(uri)
+                                    .apply(new RequestOptions().override(400))
+                                    .into(image);
+                        }catch (Exception ex){
+                            Toast.makeText(CategoryEditActivity.this, "Some mistake was made!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+        );
+    }
+    private String getRealPathFromURI(Uri uri) {
+        String[] projection = { MediaStore.Images.Media.DATA };
+        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        String result = cursor.getString(column_index);
+        cursor.close();
+        return result;
     }
 
 }

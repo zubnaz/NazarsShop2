@@ -11,6 +11,7 @@
         android:id="@+id/categoryView"
         android:layout_width="436dp"
         android:layout_height="735dp"
+        android:padding="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

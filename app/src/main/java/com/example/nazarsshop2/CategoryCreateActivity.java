@@ -1,11 +1,13 @@
 package com.example.nazarsshop2;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -21,6 +23,7 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -55,6 +58,7 @@ public class CategoryCreateActivity extends BaseActivity {
     ActivityResultLauncher<Intent> activityResultLauncher;
     ImageView image;
     Uri uri;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +69,7 @@ public class CategoryCreateActivity extends BaseActivity {
         tlCategoryDescription = findViewById(R.id.tlCategoryDescription);
         btnGetPhoto= findViewById(R.id.buttonGetPhoto);
         image = findViewById(R.id.imageView);
+
         RegisterResult();
         btnGetPhoto.setOnClickListener(
                 new View.OnClickListener() {

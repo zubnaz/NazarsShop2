@@ -3,8 +3,12 @@ package com.example.nazarsshop2.adapter;
 import static android.content.Intent.getIntent;
 import static androidx.core.content.ContextCompat.startActivity;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +29,7 @@ import com.example.nazarsshop2.NetworkService;
 import com.example.nazarsshop2.R;
 import com.example.nazarsshop2.objects.Category;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,36 +62,58 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         holder.id.setText(String.valueOf(categories.get(position).getId()));
         holder.name.setText(categories.get(position).getName());
         holder.description.setText(categories.get(position).getDescription());
-        String url = "https://spu111.itstep.click/images/"+categories.get(position).getImage();
+        holder.user.setText(categories.get(position).getUser());
+        String url = "http://192.168.0.105:5182/images/"+categories.get(position).getImage();
         Glide.with(context).load(url).apply(new RequestOptions().override(500)).into(holder.image);
+
+
+
         int id_ = position;
         holder.deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                NetworkService
-                        .GetNetworkService()
-                        .getApi()
-                        .Delete(categories.get(id_).getId())
-                        .enqueue(
-                                new Callback() {
-                                    @Override
-                                    public void onResponse(Call call, Response response) {
-                                        if(response.isSuccessful()){
-                                            Toast.makeText(context, "Категорію успішно видалено!", Toast.LENGTH_SHORT).show();
-                                            mainActivity.finish();
-                                           context.startActivity(mainActivity.getIntent());
 
-                                        }
 
-                                    }
+                AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity);
+                builder.setMessage("Ви впевнені, що хочете видалити категорію # "+categories.get(position).getId()+" ?")
+                        .setPositiveButton("Так", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                NetworkService
+                                        .GetNetworkService()
+                                        .getApi()
+                                        .Delete(categories.get(id_).getId())
+                                        .enqueue(
+                                                new Callback() {
+                                                    @Override
+                                                    public void onResponse(Call call, Response response) {
+                                                        if(response.isSuccessful()){
+                                                            Toast.makeText(context, "Категорію успішно видалено!", Toast.LENGTH_SHORT).show();
+                                                            mainActivity.finish();
+                                                            context.startActivity(mainActivity.getIntent());
 
-                                    @Override
-                                    public void onFailure(Call call, Throwable t) {
+                                                        }
 
-                                    }
-                                }
-                        );
-            }
+                                                    }
+
+                                                    @Override
+                                                    public void onFailure(Call call, Throwable t) {
+
+                                                    }
+                                                }
+                                        );
+                            }
+                        })
+                        .setNegativeButton("Ні", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+                            }
+                        });
+
+                builder.show();
+
+
+               };
+
         });
         holder.editBtn.setOnClickListener(
                 new View.OnClickListener() {
@@ -111,7 +138,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
 
     public static class CategoryViewHolder extends RecyclerView.ViewHolder{
 
-        TextView id,name,description;
+        TextView id,name,description,user;
         ImageView image;
         Button editBtn, deleteBtn;
 
@@ -120,6 +147,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
             id = itemView.findViewById(R.id.idView);
             name = itemView.findViewById(R.id.nameView);
             description = itemView.findViewById(R.id.descriptionView);
+            user = itemView.findViewById(R.id.userView);
             image = itemView.findViewById(R.id.imageView);
             editBtn = itemView.findViewById(R.id.buttonEdit);
             deleteBtn = itemView.findViewById(R.id.buttonDelete);

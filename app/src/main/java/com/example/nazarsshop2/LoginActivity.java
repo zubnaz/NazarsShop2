@@ -31,16 +31,6 @@ public class LoginActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_login);
 
-        Button buttonBack = findViewById(R.id.buttonBack);
-        buttonBack.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                        startActivity(intent);
-                    }
-                }
-        );
         Button buttonLogin = findViewById(R.id.buttonLogin);
         buttonLogin.setOnClickListener(
                 new View.OnClickListener() {
@@ -65,6 +55,9 @@ public class LoginActivity extends AppCompatActivity {
                                                         Log.i("333", "You're welcome!");
 
                                                         builder.setMessage("You're welcome!");
+                                                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                                        LoginActivity.this.finish();
+                                                        startActivity(intent);
                                                     }
                                                     else {
                                                         builder.setMessage("Invalid parameters!");

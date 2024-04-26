@@ -4,6 +4,8 @@
         android:title="Головна"/>
     <item android:id="@+id/m_create"
         android:title="Додати"/>
+    <item android:id="@+id/m_register"
+        android:title="Зареєструватися"/>
     <item android:id="@+id/m_login"
-        android:title="Увійти"/>
+        android:title="Вийти"/>
 </menu>
