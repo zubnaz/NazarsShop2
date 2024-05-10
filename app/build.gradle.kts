@@ -42,4 +42,5 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:3.8.0")
     implementation("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
+    implementation("com.github.ybq:Android-SpinKit:1.4.0")
 }

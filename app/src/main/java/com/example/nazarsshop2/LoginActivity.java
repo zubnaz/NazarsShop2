@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.webkit.CookieManager;
+import android.webkit.ValueCallback;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -18,6 +20,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.nazarsshop2.objects.JwtToken;
 import com.example.nazarsshop2.objects.Login;
+import com.example.nazarsshop2.objects.Token;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -56,6 +59,24 @@ public class LoginActivity extends AppCompatActivity {
 
                                                         builder.setMessage("You're welcome!");
                                                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                                        String token = response.body().getToken().toString();
+                                                        Log.i("Token-login1",token);
+                                                        Token.setToken(token);
+                                                        Log.i("Token-login2",Token.getToken());
+                                                        /*CookieManager.getInstance().removeAllCookies(new ValueCallback<Boolean>() {
+                                                            @Override
+                                                            public void onReceiveValue(Boolean aBoolean) {
+                                                                if (aBoolean) {
+                                                                    Log.d("Cookies", "All cookies removed");
+                                                                } else {
+                                                                    Log.e("Cookies", "Failed to remove cookies");
+                                                                }
+                                                            }
+                                                        });
+                                                        CookieManager.getInstance().setCookie("192.168.0.105:5182",token);*/
+
+
+                                                        //intent.putExtra("token",response.body().getToken());
                                                         LoginActivity.this.finish();
                                                         startActivity(intent);
                                                     }
@@ -82,5 +103,13 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 }
         );
+        Button buttonRegister = findViewById(R.id.buttonRegister);
+        buttonRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LoginActivity.this, Register.class);
+                startActivity(intent);
+            }
+        });
     }
 }

@@ -27,6 +27,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.nazarsshop2.objects.CategoryEditDto;
+import com.example.nazarsshop2.objects.Token;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.File;
@@ -91,14 +92,19 @@ public class CategoryEditActivity extends BaseActivity {
                             RequestBody idPart = RequestBody.create(MediaType.parse("text/plain"),String.valueOf(id));
                             RequestBody namePart = RequestBody.create(MediaType.parse("text/plain"), tlName.getEditText().getText().toString());
                             RequestBody descriptionPart = RequestBody.create(MediaType.parse("text/plain"), tlDescription.getEditText().getText().toString());
-                            Drawable drawable = image.getDrawable();
-                            Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-                            String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Image Description", null);
-                            Uri imageUri = Uri.parse(path);
-                            File imageFile = new File(getRealPathFromURI(imageUri));
+                            //Drawable drawable = image.getDrawable();
+                            //Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+                            //String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Image Description", null);
+                            MultipartBody.Part imagePart;
+                            if(uri==null)imagePart=null;
+                            else{
+                                Uri imageUri = uri;
+                                File imageFile = new File(getRealPathFromURI(imageUri));
 
-                            RequestBody requestFile = RequestBody.create(MediaType.parse("image/*"), imageFile);
-                            MultipartBody.Part imagePart = MultipartBody.Part.createFormData("image", imageFile.getName(), requestFile);
+                                RequestBody requestFile = RequestBody.create(MediaType.parse("image/*"), imageFile);
+                                imagePart = MultipartBody.Part.createFormData("image", imageFile.getName(), requestFile);
+                            }
+
                             /*CategoryEditDto model = new CategoryEditDto();
                             model.setId(intent.getIntExtra("Id",-1));
                             model.setName(tlName.getEditText().getText().toString());
@@ -106,7 +112,7 @@ public class CategoryEditActivity extends BaseActivity {
                             NetworkService
                                     .GetNetworkService()
                                     .getApi()
-                                    .Edit(idPart,namePart,descriptionPart,imagePart)
+                                    .Edit(idPart,namePart,descriptionPart,imagePart,"Bearer "+ Token.getToken())
                                     .enqueue(
                                             new Callback<Void>() {
                                                 @Override

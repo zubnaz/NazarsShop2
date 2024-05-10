@@ -6,8 +6,8 @@ import com.google.gson.annotations.SerializedName;
 public class JwtToken {
     @SerializedName("token")
     @Expose
-    private String token = "";
-    public String getToken() {
+    private  String token = "";
+    public  String getToken() {
         return token;
     }
 

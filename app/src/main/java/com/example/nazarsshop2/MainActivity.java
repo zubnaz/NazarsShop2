@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.CookieManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 
@@ -20,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.nazarsshop2.adapter.CategoryAdapter;
 import com.example.nazarsshop2.objects.Category;
+import com.example.nazarsshop2.objects.Token;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,11 +38,17 @@ public class MainActivity extends BaseActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
+        //Log.d("token --->",CookieManager.getInstance().getCookie("token"));
+
+        //String cookies = CookieManager.getInstance().getCookie("192.168.0.105:5182");
+        String cookies = Token.getToken();
+
+
         RecyclerView recyclerView = findViewById(R.id.categoryView);
         NetworkService
                 .GetNetworkService()
                 .getApi()
-                .getCategory()
+                .getCategory("Bearer " + cookies)
                 .enqueue(
                         new Callback<List<Category>>() {
                             @Override
@@ -48,12 +56,32 @@ public class MainActivity extends BaseActivity {
 
                                 if(response.body()!=null){
                                     int count = response.body().size();
-                                    Log.d("Count --->",String.valueOf(count));
                                     List<Category> categories = response.body();
-                                    CategoryAdapter adapter = new CategoryAdapter(getBaseContext(),categories,MainActivity.this);
+                                    //NetworkService
+                                            //.GetNetworkService()
+                                            //.getApi()
+                                            //.checkRole("Bearer "+cookies)
+                                           // .enqueue(
+                                                    //new Callback<Boolean>() {
+                                                        //@Override
+                                                        //public void onResponse(Call<Boolean> call, Response<Boolean> response) {
 
-                                    recyclerView.setAdapter(adapter);
-                                    recyclerView.setLayoutManager(new LinearLayoutManager(getBaseContext()));
+                                                            Log.d("Count --->",String.valueOf(count));
+
+
+                                                            CategoryAdapter adapter = new CategoryAdapter(getBaseContext(),categories,MainActivity.this);
+
+                                                            recyclerView.setAdapter(adapter);
+                                                            recyclerView.setLayoutManager(new LinearLayoutManager(getBaseContext()));
+                                                        //}
+
+                                                       // @Override
+                                                        //public void onFailure(Call<Boolean> call, Throwable t) {
+
+                                                        //}
+                                                   // }
+                                            //);
+
                                 }
                             }
 

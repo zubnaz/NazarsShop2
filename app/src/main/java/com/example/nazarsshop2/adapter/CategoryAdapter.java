@@ -9,9 +9,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.CookieManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -28,6 +30,7 @@ import com.example.nazarsshop2.MainActivity;
 import com.example.nazarsshop2.NetworkService;
 import com.example.nazarsshop2.R;
 import com.example.nazarsshop2.objects.Category;
+import com.example.nazarsshop2.objects.Token;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -41,18 +44,29 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     private Context context;
     private List<Category> categories;
     private MainActivity mainActivity;
+    //static boolean role;
+    private String cookies = Token.getToken();
+
 
     public CategoryAdapter(Context context, List<Category> categories, MainActivity mainActivity) {
         this.context=context;
         this.categories=categories;
         this.mainActivity = mainActivity;
+        //this.role = role;
     }
 
     @NonNull
     @Override
     public CategoryAdapter.CategoryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.category_item,parent,false);
+        View view;
+
+        //if(role==true){
+            view = inflater.inflate(R.layout.category_item,parent,false);
+        //}
+        //else{
+           // view = inflater.inflate(R.layout.category_item_user,parent,false);
+        //}
         return new CategoryViewHolder(view);
     }
 
@@ -67,8 +81,9 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         Glide.with(context).load(url).apply(new RequestOptions().override(500)).into(holder.image);
 
 
-
+        //if(role==true){
         int id_ = position;
+
         holder.deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -81,7 +96,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
                                 NetworkService
                                         .GetNetworkService()
                                         .getApi()
-                                        .Delete(categories.get(id_).getId())
+                                        .Delete(categories.get(id_).getId(),"Bearer " + cookies)
                                         .enqueue(
                                                 new Callback() {
                                                     @Override
@@ -129,6 +144,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
                     }
                 }
         );
+        //}
     }
 
     @Override
@@ -141,6 +157,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         TextView id,name,description,user;
         ImageView image;
         Button editBtn, deleteBtn;
+        //private String cookies = CookieManager.getInstance().getCookie("192.168.0.105:5182");
 
         public CategoryViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -149,8 +166,12 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
             description = itemView.findViewById(R.id.descriptionView);
             user = itemView.findViewById(R.id.userView);
             image = itemView.findViewById(R.id.imageView);
-            editBtn = itemView.findViewById(R.id.buttonEdit);
-            deleteBtn = itemView.findViewById(R.id.buttonDelete);
+            //if(role == true) {
+                editBtn = itemView.findViewById(R.id.buttonEdit);
+                deleteBtn = itemView.findViewById(R.id.buttonDelete);
+            //}
+
+
         }
     }
 }

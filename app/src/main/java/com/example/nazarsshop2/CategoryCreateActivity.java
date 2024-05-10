@@ -13,6 +13,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.webkit.CookieManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -34,6 +35,8 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.nazarsshop2.adapter.CategoryAdapter;
 import com.example.nazarsshop2.objects.Category;
 import com.example.nazarsshop2.objects.CategoryCreateDto;
+import com.example.nazarsshop2.objects.Token;
+import com.example.nazarsshop2.utils.CommonUtils;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.ByteArrayOutputStream;
@@ -95,32 +98,37 @@ public class CategoryCreateActivity extends BaseActivity {
 
             Drawable drawable = image.getDrawable();
             Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-            String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Image Description", null);
+            String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "IMG_" + System.currentTimeMillis(), null);
             Uri imageUri = Uri.parse(path);
             File imageFile = new File(getRealPathFromURI(imageUri));
 
             RequestBody requestFile = RequestBody.create(MediaType.parse("image/*"), imageFile);
             MultipartBody.Part imagePart = MultipartBody.Part.createFormData("image", imageFile.getName(), requestFile);
             //newCategory.setImage(imagePart);
-
+            //String cookies = CookieManager.getInstance().getCookie("192.168.0.105:5182");
+            String cookies = Token.getToken();
+            CommonUtils.showLoading();
             NetworkService
                     .GetNetworkService()
                     .getApi()
-                    .Create(namePart,descriptionPart,imagePart)
+                    .Create(namePart,descriptionPart,imagePart,"Bearer " + cookies)
                     .enqueue(
                             new Callback<Category>() {
                                 @Override
                                 public void onResponse(Call<Category> call, Response<Category> response) {
                                     if(response.isSuccessful()){
+                                        CommonUtils.hideLoading();
                                         Intent intent = new Intent(CategoryCreateActivity.this, MainActivity.class);
                                         startActivity(intent);
                                         finish();
                                     }
+                                    CommonUtils.hideLoading();
                                 }
 
                                 @Override
                                 public void onFailure(Call<Category> call, Throwable t) {
                                     Log.e("Error REST","Something went wrong");
+                                    CommonUtils.hideLoading();
                                 }
                             }
                     );
